@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building Libraries — Pottery for a Purpose</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --clay:    #C67B52;
+      --clay-dk: #A05E3A;
+      --cream:   #FDF6EC;
+      --sand:    #F0E0C8;
+      --brown:   #5C3A1E;
+      --text:    #3D2B1F;
+      --muted:   #8B6A52;
+      --white:   #FFFBF5;
+      --radius:  12px;
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--white);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    header {
+      background: var(--brown);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      color: var(--cream);
+      font-size: 1.4rem;
+      font-weight: bold;
+      letter-spacing: 0.02em;
+    }
+    .logo span { color: var(--clay); }
+    nav a {
+      color: var(--sand);
+      text-decoration: none;
+      margin-left: 1.8rem;
+      font-size: 0.95rem;
+      font-family: sans-serif;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--clay); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--brown) 0%, #7A4A28 100%);
+      color: var(--cream);
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: var(--clay);
+      color: var(--white);
+      font-family: sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 99px;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1.2;
+      max-width: 720px;
+      margin: 0 auto 1rem;
+    }
+    .hero h1 em { color: var(--clay); font-style: normal; }
+    .hero p {
+      font-family: sans-serif;
+      font-size: 1.1rem;
+      color: var(--sand);
+      max-width: 540px;
+      margin: 0 auto 2rem;
+    }
+    .btn {
+      display: inline-block;
+      background: var(--clay);
+      color: var(--white);
+      font-family: sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.8rem 2rem;
+      border-radius: 99px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn:hover { background: var(--clay-dk); transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--clay);
+      color: var(--clay);
+      margin-left: 0.8rem;
+    }
+    .btn-outline:hover { background: var(--clay); color: var(--white); }
+
+    /* ── MISSION STRIP ── */
+    .mission {
+      background: var(--sand);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .mission-grid {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .mission-item { text-align: center; }
+    .mission-item .icon { font-size: 2rem; margin-bottom: 0.4rem; }
+    .mission-item strong {
+      display: block;
+      font-size: 1.6rem;
+      color: var(--clay-dk);
+    }
+    .mission-item span {
+      font-family: sans-serif;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .section-title h2 { font-size: 2rem; color: var(--brown); }
+    .section-title p {
+      font-family: sans-serif;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    /* ── PRODUCTS ── */
+    #shop { padding: 5rem 2rem; background: var(--white); }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--cream);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(60,30,10,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(60,30,10,0.14); }
+    .card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      background: var(--sand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+    .card-body { padding: 1.2rem 1.4rem 1.4rem; flex: 1; display: flex; flex-direction: column; }
+    .card-body h3 { font-size: 1.15rem; color: var(--brown); margin-bottom: 0.3rem; }
+    .card-body p {
+      font-family: sans-serif;
+      font-size: 0.88rem;
+      color: var(--muted);
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .price { font-size: 1.25rem; font-weight: bold; color: var(--clay-dk); }
+    .order-btn {
+      background: var(--clay);
+      color: var(--white);
+      border: none;
+      padding: 0.45rem 1.1rem;
+      border-radius: 99px;
+      font-family: sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .order-btn:hover { background: var(--clay-dk); }
+
+    /* ── ABOUT ── */
+    #about {
+      background: var(--sand);
+      padding: 5rem 2rem;
+    }
+    .about-inner {
+      max-width: 780px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .about-inner p {
+      font-size: 1.08rem;
+      color: var(--muted);
+      font-family: sans-serif;
+      margin-bottom: 1rem;
+    }
+    blockquote {
+      border-left: 4px solid var(--clay);
+      margin: 2rem auto;
+      padding: 1rem 1.5rem;
+      text-align: left;
+      background: var(--cream);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-style: italic;
+      color: var(--brown);
+      font-size: 1.1rem;
+      max-width: 600px;
+    }
+
+    /* ── ORDER FORM ── */
+    #order {
+      padding: 5rem 2rem;
+      background: var(--white);
+    }
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--cream);
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 16px rgba(60,30,10,0.08);
+    }
+    .form-row { margin-bottom: 1.2rem; }
+    label {
+      display: block;
+      font-family: sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 0.35rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid #D9C4AD;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: sans-serif;
+      background: var(--white);
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--clay);
+    }
+    textarea { resize: vertical; min-height: 110px; }
+    .form-note {
+      font-family: sans-serif;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 0.8rem;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 0.85rem;
+      font-size: 1.05rem;
+      border-radius: 99px;
+      margin-top: 0.4rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--brown);
+      color: var(--sand);
+      text-align: center;
+      padding: 2.5rem 1rem;
+      font-family: sans-serif;
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--clay); text-decoration: none; }
+    footer p { margin: 0.3rem 0; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--brown);
+      color: var(--cream);
+      padding: 0.9rem 1.5rem;
+      border-radius: var(--radius);
+      font-family: sans-serif;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transform: translateY(120%);
+      transition: transform 0.3s ease;
+      z-index: 999;
+    }
+    #toast.show { transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<header>
+  <div class="logo">Building <span>Libraries</span></div>
+  <nav>
+    <a href="#shop">Shop</a>
+    <a href="#about">Our Mission</a>
+    <a href="#order">Order</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Every purchase builds a future</div>
+  <h1>Beautiful Pottery.<br><em>Books for Every Child.</em></h1>
+  <p>Hand-crafted ceramics made with love — 100% of proceeds go toward building libraries in underserved communities.</p>
+  <a href="#shop" class="btn">Shop the Collection</a>
+  <a href="#about" class="btn btn-outline">Our Story</a>
+</section>
+
+<!-- MISSION STRIP -->
+<section class="mission">
+  <div class="mission-grid">
+    <div class="mission-item">
+      <div class="icon">📚</div>
+      <strong>12</strong>
+      <span>Libraries built so far</span>
+    </div>
+    <div class="mission-item">
+      <div class="icon">👧</div>
+      <strong>3,400+</strong>
+      <span>Children reached</span>
+    </div>
+    <div class="mission-item">
+      <div class="icon">🏺</div>
+      <strong>100%</strong>
+      <span>Goes to the cause</span>
+    </div>
+  </div>
+</section>
+
+<!-- SHOP -->
+<section id="shop">
+  <div class="section-title">
+    <h2>Our Pottery Collection</h2>
+    <p>Each piece is handmade — no two are exactly alike.</p>
+  </div>
+  <div class="products-grid">
+
+    <div class="card">
+      <div class="card-img">🏺</div>
+      <div class="card-body">
+        <h3>Hand-Thrown Mug</h3>
+        <p>A cozy, comfortable mug with a warm terracotta glaze. Perfect for your morning tea or coffee ritual.</p>
+        <div class="card-footer">
+          <span class="price">$25</span>
+          <button class="order-btn" onclick="prefillOrder('Hand-Thrown Mug', '$25')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img">🍚</div>
+      <div class="card-body">
+        <h3>Decorative Bowl</h3>
+        <p>A wide, shallow bowl with a speckled cream finish. Beautiful as a centerpiece or for everyday use.</p>
+        <div class="card-footer">
+          <span class="price">$40</span>
+          <button class="order-btn" onclick="prefillOrder('Decorative Bowl', '$40')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img">🌿</div>
+      <div class="card-body">
+        <h3>Planter Pot</h3>
+        <p>A sturdy, drainage-ready planter with a matte earth-tone glaze. Bring life to your windowsill.</p>
+        <div class="card-footer">
+          <span class="price">$35</span>
+          <button class="order-btn" onclick="prefillOrder('Planter Pot', '$35')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img">💐</div>
+      <div class="card-body">
+        <h3>Slim Vase</h3>
+        <p>An elegant, narrow-neck vase glazed in warm amber. Makes any single stem look like a statement.</p>
+        <div class="card-footer">
+          <span class="price">$50</span>
+          <button class="order-btn" onclick="prefillOrder('Slim Vase', '$50')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img">🕯️</div>
+      <div class="card-body">
+        <h3>Candle Holder</h3>
+        <p>A squat, dimpled candle holder that casts the warmest glow. Perfect for cozy evenings.</p>
+        <div class="card-footer">
+          <span class="price">$20</span>
+          <button class="order-btn" onclick="prefillOrder('Candle Holder', '$20')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img">🍽️</div>
+      <div class="card-body">
+        <h3>Dinner Plate Set (×2)</h3>
+        <p>Two hand-shaped dinner plates in a matching warm white glaze. Microwave and dishwasher safe.</p>
+        <div class="card-footer">
+          <span class="price">$60</span>
+          <button class="order-btn" onclick="prefillOrder('Dinner Plate Set (×2)', '$60')">Order</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="section-title">
+      <h2>Why We Do This</h2>
+    </div>
+    <p>
+      Building Libraries is a community-driven project with one simple belief: every child deserves access to books. In many rural and underserved areas, a school library is a luxury — we're working to change that.
+    </p>
+    <p>
+      Our pottery is thrown, glazed, and fired by volunteers and local artisans. When you buy a piece, you're not just getting something beautiful for your home — you're putting books on shelves and sparking curiosity in a child.
+    </p>
+    <blockquote>
+      "The library was the first place I ever felt like the world was big enough for me." — A student at one of our partner schools
+    </blockquote>
+    <p>
+      Every dollar raised goes directly toward purchasing books, building shelves, and training teachers to run reading programs. No middlemen. No overhead surprises.
+    </p>
+  </div>
+</section>
+
+<!-- ORDER FORM -->
+<section id="order">
+  <div class="section-title">
+    <h2>Place an Order</h2>
+    <p>Fill in the form and we'll get back to you within 24 hours to confirm and arrange payment.</p>
+  </div>
+  <form id="orderForm" onsubmit="submitOrder(event)">
+    <div class="form-row">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" placeholder="Jane Smith" required />
+    </div>
+    <div class="form-row">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="jane@example.com" required />
+    </div>
+    <div class="form-row">
+      <label for="item">Item(s) You'd Like</label>
+      <select id="item" required>
+        <option value="" disabled selected>Select a product…</option>
+        <option>Hand-Thrown Mug — $25</option>
+        <option>Decorative Bowl — $40</option>
+        <option>Planter Pot — $35</option>
+        <option>Slim Vase — $50</option>
+        <option>Candle Holder — $20</option>
+        <option>Dinner Plate Set (×2) — $60</option>
+        <option>Multiple items (describe below)</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="qty">Quantity</label>
+      <input type="number" id="qty" min="1" max="99" value="1" required />
+    </div>
+    <div class="form-row">
+      <label for="message">Message / Special Requests</label>
+      <textarea id="message" placeholder="Any colour preferences, gift wrapping, delivery notes…"></textarea>
+    </div>
+    <button type="submit" class="btn submit-btn">Send My Order</button>
+    <p class="form-note">Your inquiry will be sent to <a href="mailto:tinysunmoon@gmail.com">tinysunmoon@gmail.com</a></p>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong>Building Libraries</strong> — Pottery for a Purpose</p>
+  <p>Questions? Email us at <a href="mailto:tinysunmoon@gmail.com">tinysunmoon@gmail.com</a></p>
+  <p style="margin-top:1rem; font-size:0.8rem; opacity:0.6;">© 2026 Building Libraries. All proceeds support children's education.</p>
+</footer>
+
+<!-- TOAST -->
+<div id="toast">Your order email is opening!</div>
+
+<script>
+  function prefillOrder(item, price) {
+    document.getElementById('item').value = item + ' — ' + price;
+    document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function submitOrder(e) {
+    e.preventDefault();
+    const name    = document.getElementById('name').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const item    = document.getElementById('item').value;
+    const qty     = document.getElementById('qty').value;
+    const message = document.getElementById('message').value.trim();
+
+    const subject = encodeURIComponent('Order Inquiry — Building Libraries Pottery');
+    const body = encodeURIComponent(
+      `Hi Building Libraries team,\n\n` +
+      `I'd like to place an order!\n\n` +
+      `Name: ${name}\n` +
+      `Reply-to: ${email}\n` +
+      `Item: ${item}\n` +
+      `Quantity: ${qty}\n` +
+      (message ? `Notes: ${message}\n` : '') +
+      `\nThank you!`
+    );
+
+    window.location.href = `mailto:tinysunmoon@gmail.com?subject=${subject}&body=${body}`;
+
+    showToast();
+    document.getElementById('orderForm').reset();
+  }
+
+  function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+</script>
+</body>
+</html>
