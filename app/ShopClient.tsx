@@ -11,15 +11,21 @@ interface Product {
 }
 
 const FALLBACK_PRODUCTS: Product[] = [
-  { id: "1", name: "Hand-Thrown Mug",       description: "A cozy mug with a warm terracotta glaze. Perfect for your morning ritual.",            price: "25", imageUrl: "" },
-  { id: "2", name: "Decorative Bowl",        description: "Wide, shallow bowl with a speckled cream finish. Beautiful for everyday use.",          price: "40", imageUrl: "" },
-  { id: "3", name: "Planter Pot",            description: "Sturdy drainage-ready planter with a matte earth-tone glaze.",                          price: "35", imageUrl: "" },
-  { id: "4", name: "Slim Vase",              description: "Elegant narrow-neck vase in warm amber. Makes any single stem a statement.",             price: "50", imageUrl: "" },
-  { id: "5", name: "Candle Holder",          description: "Squat dimpled candle holder that casts the warmest glow.",                               price: "20", imageUrl: "" },
-  { id: "6", name: "Dinner Plate Set (×2)",  description: "Two hand-shaped dinner plates in matching warm white glaze. Dishwasher safe.",           price: "60", imageUrl: "" },
+  { id: "1", name: "Cốc gốm thủ công",        description: "Cốc gốm men nâu ấm áp, phù hợp cho buổi sáng thưởng thức trà hay cà phê.",           price: "250000",  imageUrl: "" },
+  { id: "2", name: "Bát trang trí",             description: "Bát rộng miệng men trắng đốm, vừa đẹp để trưng bày vừa tiện dùng hàng ngày.",         price: "400000",  imageUrl: "" },
+  { id: "3", name: "Chậu trồng cây",            description: "Chậu gốm chắc chắn có lỗ thoát nước, men đất màu tự nhiên, phù hợp trồng cây mini.",  price: "350000",  imageUrl: "" },
+  { id: "4", name: "Bình hoa cổ thon",          description: "Bình hoa cổ hẹp men hổ phách ấm áp, một bông hoa đã đủ làm điểm nhấn.",               price: "500000",  imageUrl: "" },
+  { id: "5", name: "Đế cắm nến",                description: "Đế nến thấp gốm nổi vân, tạo ánh sáng ấm áp dịu dàng cho những buổi tối thư giãn.",  price: "200000",  imageUrl: "" },
+  { id: "6", name: "Bộ đĩa ăn (×2)",            description: "Hai chiếc đĩa ăn thủ công men trắng kem, an toàn lò vi sóng và máy rửa bát.",         price: "600000",  imageUrl: "" },
 ];
 
 const EMOJI: Record<string, string> = { "1": "🏺", "2": "🍚", "3": "🌿", "4": "💐", "5": "🕯️", "6": "🍽️" };
+
+function formatVND(price: string) {
+  const n = parseInt(price, 10);
+  if (isNaN(n)) return price;
+  return n.toLocaleString("vi-VN") + " ₫";
+}
 
 export default function ShopClient({ products: rawProducts }: { products: Record<string, string>[] }) {
   const products: Product[] = rawProducts.length > 0
@@ -43,11 +49,11 @@ export default function ShopClient({ products: rawProducts }: { products: Record
     const qty   = fd.get("qty") as string;
     const msg   = fd.get("message") as string;
 
-    const subject = encodeURIComponent("Order Inquiry — Building Libraries Pottery");
+    const subject = encodeURIComponent("Đặt hàng — Gốm Building Libraries");
     const body = encodeURIComponent(
-      `Hi Building Libraries team,\n\nI'd like to place an order!\n\n` +
-      `Name: ${name}\nReply-to: ${email}\nItem: ${item}\nQuantity: ${qty}\n` +
-      (msg ? `Notes: ${msg}\n` : "") + `\nThank you!`
+      `Xin chào đội ngũ Building Libraries,\n\nTôi muốn đặt hàng!\n\n` +
+      `Họ tên: ${name}\nEmail liên hệ: ${email}\nSản phẩm: ${item}\nSố lượng: ${qty}\n` +
+      (msg ? `Ghi chú: ${msg}\n` : "") + `\nXin cảm ơn!`
     );
     window.location.href = `mailto:tinysunmoon@gmail.com?subject=${subject}&body=${body}`;
 
@@ -66,31 +72,31 @@ export default function ShopClient({ products: rawProducts }: { products: Record
           Building <span style={{ color: "#C67B52" }}>Libraries</span>
         </div>
         <nav className="flex gap-6 font-sans text-sm" style={{ color: "#F0E0C8" }}>
-          <a href="#shop"  className="hover:text-[#C67B52] transition-colors">Shop</a>
-          <a href="#about" className="hover:text-[#C67B52] transition-colors">Mission</a>
-          <a href="#order" className="hover:text-[#C67B52] transition-colors">Order</a>
+          <a href="#shop"  className="hover:text-[#C67B52] transition-colors">Cửa hàng</a>
+          <a href="#about" className="hover:text-[#C67B52] transition-colors">Sứ mệnh</a>
+          <a href="#order" className="hover:text-[#C67B52] transition-colors">Đặt hàng</a>
         </nav>
       </header>
 
       {/* HERO */}
       <section className="text-center py-24 px-4" style={{ background: "linear-gradient(135deg,#5C3A1E 0%,#7A4A28 100%)" }}>
         <span className="inline-block bg-[#C67B52] text-white font-sans text-xs font-bold tracking-widest uppercase px-4 py-1 rounded-full mb-4">
-          Every purchase builds a future
+          Mỗi mua sắm xây dựng tương lai
         </span>
         <h1 className="text-4xl md:text-5xl font-bold text-[#FDF6EC] leading-tight max-w-2xl mx-auto mb-4">
-          Beautiful Pottery.<br /><span style={{ color: "#C67B52" }}>Books for Every Child.</span>
+          Gốm thủ công đẹp.<br /><span style={{ color: "#C67B52" }}>Sách cho mọi trẻ em.</span>
         </h1>
         <p className="font-sans text-[#F0E0C8] text-lg max-w-md mx-auto mb-8">
-          Hand-crafted ceramics made with love — 100% of proceeds go toward building libraries.
+          Đồ gốm được làm thủ công bằng tình yêu — 100% doanh thu dùng để xây dựng thư viện cho trẻ em.
         </p>
-        <a href="#shop"  className="inline-block bg-[#C67B52] hover:bg-[#A05E3A] text-white font-sans font-semibold px-6 py-3 rounded-full transition-colors mr-3">Shop the Collection</a>
-        <a href="#about" className="inline-block border-2 border-[#C67B52] text-[#C67B52] hover:bg-[#C67B52] hover:text-white font-sans font-semibold px-6 py-3 rounded-full transition-colors">Our Story</a>
+        <a href="#shop"  className="inline-block bg-[#C67B52] hover:bg-[#A05E3A] text-white font-sans font-semibold px-6 py-3 rounded-full transition-colors mr-3">Xem bộ sưu tập</a>
+        <a href="#about" className="inline-block border-2 border-[#C67B52] text-[#C67B52] hover:bg-[#C67B52] hover:text-white font-sans font-semibold px-6 py-3 rounded-full transition-colors">Câu chuyện của chúng tôi</a>
       </section>
 
       {/* STATS */}
       <section className="py-10 px-4" style={{ backgroundColor: "#F0E0C8" }}>
         <div className="flex justify-center gap-16 flex-wrap">
-          {[["📚", "12", "Libraries built"], ["👧", "3,400+", "Children reached"], ["🏺", "100%", "Goes to the cause"]].map(([icon, num, label]) => (
+          {[["📚", "12", "Thư viện đã xây"], ["👧", "3.400+", "Trẻ em được tiếp cận"], ["🏺", "100%", "Đóng góp cho mục đích"]].map(([icon, num, label]) => (
             <div key={label} className="text-center">
               <div className="text-3xl mb-1">{icon}</div>
               <strong className="block text-2xl font-bold" style={{ color: "#A05E3A" }}>{num}</strong>
@@ -103,11 +109,11 @@ export default function ShopClient({ products: rawProducts }: { products: Record
       {/* SHOP */}
       <section id="shop" className="py-20 px-4" style={{ backgroundColor: "#FFFBF5" }}>
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold" style={{ color: "#5C3A1E" }}>Our Pottery Collection</h2>
-          <p className="font-sans mt-2" style={{ color: "#8B6A52" }}>Each piece is handmade — no two are exactly alike.</p>
+          <h2 className="text-3xl font-bold" style={{ color: "#5C3A1E" }}>Bộ sưu tập gốm</h2>
+          <p className="font-sans mt-2" style={{ color: "#8B6A52" }}>Mỗi sản phẩm được làm thủ công — không có hai cái giống nhau.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {products.map((p, i) => (
+          {products.map((p) => (
             <div key={p.id}
                  className="rounded-xl overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-lg"
                  style={{ backgroundColor: "#FDF6EC", boxShadow: "0 2px 12px rgba(60,30,10,0.08)" }}>
@@ -123,13 +129,13 @@ export default function ShopClient({ products: rawProducts }: { products: Record
                 <h3 className="font-bold text-lg mb-1" style={{ color: "#5C3A1E" }}>{p.name}</h3>
                 <p className="font-sans text-sm flex-1 mb-4" style={{ color: "#8B6A52" }}>{p.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold" style={{ color: "#A05E3A" }}>${p.price}</span>
+                  <span className="text-xl font-bold" style={{ color: "#A05E3A" }}>{formatVND(p.price)}</span>
                   <button onClick={() => prefillOrder(p)}
                           className="font-sans text-sm font-semibold px-4 py-1.5 rounded-full text-white transition-colors"
                           style={{ backgroundColor: "#C67B52" }}
                           onMouseOver={e => (e.currentTarget.style.backgroundColor = "#A05E3A")}
                           onMouseOut={e  => (e.currentTarget.style.backgroundColor = "#C67B52")}>
-                    Order
+                    Đặt hàng
                   </button>
                 </div>
               </div>
@@ -141,16 +147,16 @@ export default function ShopClient({ products: rawProducts }: { products: Record
       {/* ABOUT */}
       <section id="about" className="py-20 px-4" style={{ backgroundColor: "#F0E0C8" }}>
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6" style={{ color: "#5C3A1E" }}>Why We Do This</h2>
+          <h2 className="text-3xl font-bold mb-6" style={{ color: "#5C3A1E" }}>Tại sao chúng tôi làm điều này</h2>
           <p className="font-sans mb-4" style={{ color: "#8B6A52" }}>
-            Building Libraries is a community-driven project with one simple belief: every child deserves access to books. Our pottery is thrown, glazed, and fired by volunteers and local artisans.
+            Building Libraries là dự án cộng đồng với một niềm tin đơn giản: mọi đứa trẻ đều xứng đáng được tiếp cận sách. Đồ gốm của chúng tôi được tạo ra bởi tình nguyện viên và nghệ nhân địa phương.
           </p>
           <blockquote className="text-left border-l-4 pl-5 py-2 my-6 italic text-lg rounded-r-xl"
                       style={{ borderColor: "#C67B52", backgroundColor: "#FDF6EC", color: "#5C3A1E" }}>
-            &ldquo;The library was the first place I ever felt like the world was big enough for me.&rdquo;
+            &ldquo;Thư viện là nơi đầu tiên tôi cảm thấy thế giới đủ rộng lớn cho mình.&rdquo;
           </blockquote>
           <p className="font-sans" style={{ color: "#8B6A52" }}>
-            Every dollar goes directly toward books, shelves, and training teachers to run reading programs.
+            Toàn bộ doanh thu được dùng trực tiếp để mua sách, làm kệ và đào tạo giáo viên điều hành chương trình đọc sách.
           </p>
         </div>
       </section>
@@ -158,46 +164,46 @@ export default function ShopClient({ products: rawProducts }: { products: Record
       {/* ORDER FORM */}
       <section id="order" className="py-20 px-4" style={{ backgroundColor: "#FFFBF5" }}>
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold" style={{ color: "#5C3A1E" }}>Place an Order</h2>
-          <p className="font-sans mt-2" style={{ color: "#8B6A52" }}>We&apos;ll reply within 24 hours to confirm and arrange payment.</p>
+          <h2 className="text-3xl font-bold" style={{ color: "#5C3A1E" }}>Đặt hàng</h2>
+          <p className="font-sans mt-2" style={{ color: "#8B6A52" }}>Chúng tôi sẽ phản hồi trong vòng 24 giờ để xác nhận và hướng dẫn thanh toán.</p>
         </div>
         <form onSubmit={submitOrder} className="max-w-lg mx-auto rounded-xl p-8 space-y-4"
               style={{ backgroundColor: "#FDF6EC", boxShadow: "0 2px 16px rgba(60,30,10,0.08)" }}>
           <div>
-            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Your Name</label>
-            <input name="name" required placeholder="Jane Smith"
+            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Họ và tên</label>
+            <input name="name" required placeholder="Nguyễn Văn A"
                    className="w-full border rounded-lg px-3 py-2 font-sans text-sm bg-white focus:outline-none focus:border-[#C67B52]"
                    style={{ borderColor: "#D9C4AD" }} />
           </div>
           <div>
-            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Email Address</label>
-            <input name="email" type="email" required placeholder="jane@example.com"
+            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Địa chỉ email</label>
+            <input name="email" type="email" required placeholder="example@email.com"
                    className="w-full border rounded-lg px-3 py-2 font-sans text-sm bg-white focus:outline-none focus:border-[#C67B52]"
                    style={{ borderColor: "#D9C4AD" }} />
           </div>
           <div>
-            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Item</label>
+            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Sản phẩm</label>
             <select name="item" required
-                    value={selected ? `${selected.name} — $${selected.price}` : ""}
-                    onChange={e => setSelected(null)}
+                    value={selected ? `${selected.name} — ${formatVND(selected.price)}` : ""}
+                    onChange={() => setSelected(null)}
                     className="w-full border rounded-lg px-3 py-2 font-sans text-sm bg-white focus:outline-none focus:border-[#C67B52]"
                     style={{ borderColor: "#D9C4AD" }}>
-              <option value="" disabled>Select a product…</option>
+              <option value="" disabled>Chọn sản phẩm…</option>
               {products.map(p => (
-                <option key={p.id} value={`${p.name} — $${p.price}`}>{p.name} — ${p.price}</option>
+                <option key={p.id} value={`${p.name} — ${formatVND(p.price)}`}>{p.name} — {formatVND(p.price)}</option>
               ))}
-              <option value="Multiple items (describe below)">Multiple items (describe below)</option>
+              <option value="Nhiều sản phẩm (mô tả bên dưới)">Nhiều sản phẩm (mô tả bên dưới)</option>
             </select>
           </div>
           <div>
-            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Quantity</label>
+            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Số lượng</label>
             <input name="qty" type="number" min="1" max="99" defaultValue="1" required
                    className="w-full border rounded-lg px-3 py-2 font-sans text-sm bg-white focus:outline-none focus:border-[#C67B52]"
                    style={{ borderColor: "#D9C4AD" }} />
           </div>
           <div>
-            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Notes</label>
-            <textarea name="message" rows={3} placeholder="Colour preferences, gift wrapping, delivery notes…"
+            <label className="block font-sans font-semibold text-sm mb-1" style={{ color: "#5C3A1E" }}>Ghi chú</label>
+            <textarea name="message" rows={3} placeholder="Yêu cầu về màu sắc, gói quà, địa chỉ giao hàng…"
                       className="w-full border rounded-lg px-3 py-2 font-sans text-sm bg-white focus:outline-none focus:border-[#C67B52] resize-none"
                       style={{ borderColor: "#D9C4AD" }} />
           </div>
@@ -206,10 +212,10 @@ export default function ShopClient({ products: rawProducts }: { products: Record
                   style={{ backgroundColor: "#C67B52" }}
                   onMouseOver={e => (e.currentTarget.style.backgroundColor = "#A05E3A")}
                   onMouseOut={e  => (e.currentTarget.style.backgroundColor = "#C67B52")}>
-            Send My Order
+            Gửi đơn hàng
           </button>
           <p className="font-sans text-xs text-center" style={{ color: "#8B6A52" }}>
-            Your inquiry will be sent to{" "}
+            Yêu cầu sẽ được gửi đến{" "}
             <a href="mailto:tinysunmoon@gmail.com" className="underline" style={{ color: "#C67B52" }}>
               tinysunmoon@gmail.com
             </a>
@@ -219,16 +225,16 @@ export default function ShopClient({ products: rawProducts }: { products: Record
 
       {/* FOOTER */}
       <footer className="text-center py-10 px-4 font-sans text-sm" style={{ backgroundColor: "#5C3A1E", color: "#F0E0C8" }}>
-        <p className="font-bold text-base mb-1 text-[#FDF6EC]">Building Libraries — Pottery for a Purpose</p>
-        <p>Questions? <a href="mailto:tinysunmoon@gmail.com" className="text-[#C67B52] hover:underline">tinysunmoon@gmail.com</a></p>
-        <p className="mt-4 opacity-50 text-xs">© 2026 Building Libraries. All proceeds support children&apos;s education.</p>
+        <p className="font-bold text-base mb-1 text-[#FDF6EC]">Building Libraries — Gốm vì một mục đích</p>
+        <p>Liên hệ: <a href="mailto:tinysunmoon@gmail.com" className="text-[#C67B52] hover:underline">tinysunmoon@gmail.com</a></p>
+        <p className="mt-4 opacity-50 text-xs">© 2026 Building Libraries. Toàn bộ doanh thu hỗ trợ giáo dục trẻ em.</p>
       </footer>
 
       {/* Toast */}
       {toastVisible && (
         <div className="fixed bottom-6 right-6 font-sans text-sm font-semibold px-5 py-3 rounded-xl shadow-lg text-[#FDF6EC]"
              style={{ backgroundColor: "#5C3A1E" }}>
-          Your order email is opening!
+          Email đặt hàng đang được mở!
         </div>
       )}
     </div>

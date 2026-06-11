@@ -11,6 +11,12 @@ interface Product {
   createdAt: string;
 }
 
+function formatVND(price: string) {
+  const n = parseInt(price, 10);
+  if (isNaN(n)) return price;
+  return n.toLocaleString("vi-VN") + " ₫";
+}
+
 export default function AdminPage() {
   const [products, setProducts]   = useState<Product[]>([]);
   const [loading, setLoading]     = useState(false);
@@ -26,7 +32,7 @@ export default function AdminPage() {
       const data = await res.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch {
-      showToast("Failed to load products", false);
+      showToast("Không thể tải danh sách sản phẩm", false);
     } finally {
       setLoading(false);
     }
@@ -46,13 +52,13 @@ export default function AdminPage() {
       const fd = new FormData(e.currentTarget);
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Upload failed");
-      showToast("Product added successfully!", true);
+      if (!res.ok) throw new Error(data.error ?? "Tải lên thất bại");
+      showToast("Thêm sản phẩm thành công!", true);
       formRef.current?.reset();
       setPreview(null);
       loadProducts();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Upload failed";
+      const msg = err instanceof Error ? err.message : "Tải lên thất bại";
       showToast(msg, false);
     } finally {
       setUploading(false);
@@ -69,14 +75,14 @@ export default function AdminPage() {
     <div className="min-h-screen bg-[#FFFBF5]">
 
       {/* Header */}
-      <header className="bg-brown text-cream px-6 py-4 flex items-center justify-between sticky top-0 z-50"
+      <header className="px-6 py-4 flex items-center justify-between sticky top-0 z-50"
               style={{ backgroundColor: "#5C3A1E" }}>
         <div>
           <span className="font-bold text-xl text-[#FDF6EC]">Building <span className="text-[#C67B52]">Libraries</span></span>
-          <span className="ml-3 text-sm text-[#F0E0C8] font-sans">/ Admin</span>
+          <span className="ml-3 text-sm text-[#F0E0C8] font-sans">/ Quản trị</span>
         </div>
         <a href="/" className="text-[#F0E0C8] hover:text-[#C67B52] text-sm font-sans transition-colors">
-          View public shop →
+          Xem cửa hàng →
         </a>
       </header>
 
@@ -84,56 +90,57 @@ export default function AdminPage() {
 
         {/* Upload form */}
         <section>
-          <h2 className="text-2xl font-bold text-[#5C3A1E] mb-6">Add New Product</h2>
+          <h2 className="text-2xl font-bold text-[#5C3A1E] mb-6">Thêm sản phẩm mới</h2>
           <form ref={formRef} onSubmit={handleSubmit}
                 className="bg-[#FDF6EC] rounded-xl p-6 shadow-sm space-y-4 border border-[#F0E0C8]">
 
             <div>
               <label className="block text-sm font-semibold text-[#5C3A1E] font-sans mb-1">
-                Product Name *
+                Tên sản phẩm *
               </label>
-              <input name="name" required placeholder="e.g. Hand-Thrown Mug"
+              <input name="name" required placeholder="VD: Bình gốm thủ công"
                      className="w-full border border-[#D9C4AD] rounded-lg px-3 py-2 text-sm font-sans bg-white focus:outline-none focus:border-[#C67B52]" />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-[#5C3A1E] font-sans mb-1">
-                Description *
+                Mô tả *
               </label>
               <textarea name="description" required rows={3}
-                        placeholder="A cozy mug with a warm terracotta glaze…"
+                        placeholder="Bình gốm men nâu ấm áp, phù hợp trang trí bàn làm việc…"
                         className="w-full border border-[#D9C4AD] rounded-lg px-3 py-2 text-sm font-sans bg-white focus:outline-none focus:border-[#C67B52] resize-none" />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-[#5C3A1E] font-sans mb-1">
-                Price (USD) *
+                Giá (VND) *
               </label>
-              <input name="price" required placeholder="25" type="number" min="0" step="0.01"
+              <input name="price" required placeholder="250000" type="number" min="0" step="1000"
                      className="w-full border border-[#D9C4AD] rounded-lg px-3 py-2 text-sm font-sans bg-white focus:outline-none focus:border-[#C67B52]" />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-[#5C3A1E] font-sans mb-1">
-                Product Image
+                Hình ảnh sản phẩm
+                <span className="ml-1 font-normal text-[#8B6A52]">(tối đa 4MB — tự động nén)</span>
               </label>
               <input name="image" type="file" accept="image/*" onChange={handleImageChange}
                      className="w-full text-sm font-sans text-[#5C3A1E] file:mr-3 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:bg-[#C67B52] file:text-white file:font-semibold file:cursor-pointer hover:file:bg-[#A05E3A] cursor-pointer" />
               {preview && (
                 <div className="mt-3 rounded-lg overflow-hidden border border-[#D9C4AD] w-full aspect-video bg-[#F0E0C8]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                  <img src={preview} alt="Xem trước" className="w-full h-full object-cover" />
                 </div>
               )}
             </div>
 
             <button type="submit" disabled={uploading}
                     className="w-full bg-[#C67B52] hover:bg-[#A05E3A] disabled:opacity-60 text-white font-semibold font-sans py-2.5 rounded-full transition-colors text-sm">
-              {uploading ? "Uploading…" : "Upload to Drive & Save to Sheet"}
+              {uploading ? "Đang tải lên…" : "Tải lên Drive & Lưu vào Sheet"}
             </button>
 
             <p className="text-xs text-center text-[#8B6A52] font-sans">
-              Image → Google Drive &nbsp;|&nbsp; Data → Google Sheets
+              Hình ảnh → Google Drive &nbsp;|&nbsp; Dữ liệu → Google Sheets
             </p>
           </form>
         </section>
@@ -141,18 +148,18 @@ export default function AdminPage() {
         {/* Product list */}
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-[#5C3A1E]">Current Products</h2>
+            <h2 className="text-2xl font-bold text-[#5C3A1E]">Sản phẩm hiện tại</h2>
             <button onClick={loadProducts}
                     className="text-sm font-sans text-[#C67B52] hover:text-[#A05E3A] font-semibold transition-colors">
-              {loading ? "Refreshing…" : "Refresh"}
+              {loading ? "Đang tải…" : "Làm mới"}
             </button>
           </div>
 
           {loading ? (
-            <div className="text-center py-16 text-[#8B6A52] font-sans text-sm">Loading…</div>
+            <div className="text-center py-16 text-[#8B6A52] font-sans text-sm">Đang tải…</div>
           ) : products.length === 0 ? (
             <div className="bg-[#FDF6EC] rounded-xl border border-[#F0E0C8] p-10 text-center text-[#8B6A52] font-sans text-sm">
-              No products yet. Add your first one!
+              Chưa có sản phẩm nào. Hãy thêm sản phẩm đầu tiên!
             </div>
           ) : (
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
@@ -169,11 +176,11 @@ export default function AdminPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <h3 className="font-semibold text-[#5C3A1E] text-sm truncate">{p.name}</h3>
-                      <span className="font-bold text-[#A05E3A] text-sm flex-shrink-0">${p.price}</span>
+                      <span className="font-bold text-[#A05E3A] text-sm flex-shrink-0">{formatVND(p.price)}</span>
                     </div>
                     <p className="text-xs text-[#8B6A52] font-sans mt-0.5 line-clamp-2">{p.description}</p>
                     <p className="text-xs text-[#D9C4AD] font-sans mt-1">
-                      {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ""}
+                      {p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : ""}
                     </p>
                   </div>
                 </div>
@@ -185,7 +192,7 @@ export default function AdminPage() {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 px-5 py-3 rounded-xl text-sm font-sans font-semibold shadow-lg transition-all
+        <div className={`fixed bottom-6 right-6 px-5 py-3 rounded-xl text-sm font-sans font-semibold shadow-lg
           ${toast.ok ? "bg-[#5C3A1E] text-[#FDF6EC]" : "bg-red-600 text-white"}`}>
           {toast.msg}
         </div>

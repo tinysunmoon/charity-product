@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 import { uploadToDrive, appendToSheet } from "@/lib/google";
+
+const MAX_WIDTH  = 1200;
+const MAX_HEIGHT = 1200;
+const QUALITY    = 82;
+
+async function resizeImage(buffer: Buffer, originalName: string): Promise<{ buffer: Buffer; name: string; mime: string }> {
+  const resized = await sharp(buffer)
+    .resize(MAX_WIDTH, MAX_HEIGHT, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: QUALITY })
+    .toBuffer();
+
+  const baseName = originalName.replace(/\.[^.]+$/, "");
+  return { buffer: resized, name: `${baseName}.webp`, mime: "image/webp" };
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,13 +26,14 @@ export async function POST(req: NextRequest) {
     const imageFile   = formData.get("image") as File | null;
 
     if (!name || !description || !price) {
-      return NextResponse.json({ error: "name, description, and price are required" }, { status: 400 });
+      return NextResponse.json({ error: "Tên, mô tả và giá là bắt buộc" }, { status: 400 });
     }
 
     let imageUrl = "";
     if (imageFile && imageFile.size > 0) {
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      imageUrl = await uploadToDrive(buffer, imageFile.name, imageFile.type);
+      const raw = Buffer.from(await imageFile.arrayBuffer());
+      const { buffer, name: fileName, mime } = await resizeImage(raw, imageFile.name);
+      imageUrl = await uploadToDrive(buffer, fileName, mime);
     }
 
     const id        = `prod_${Date.now()}`;
@@ -28,6 +44,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, id, imageUrl });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return NextResponse.json({ error: "Tải lên thất bại" }, { status: 500 });
   }
 }
