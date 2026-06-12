@@ -162,7 +162,7 @@ export default function AdminPage() {
               Chưa có sản phẩm nào. Hãy thêm sản phẩm đầu tiên!
             </div>
           ) : (
-            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+            <div className="space-y-3">
               {products.map((p) => (
                 <div key={p.id} className="bg-[#FDF6EC] rounded-xl border border-[#F0E0C8] p-4 flex gap-4 items-start">
                   <div className="w-20 h-20 rounded-lg overflow-hidden bg-[#F0E0C8] flex-shrink-0">

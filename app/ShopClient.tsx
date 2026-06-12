@@ -32,8 +32,9 @@ export default function ShopClient({ products: rawProducts }: { products: Record
     ? rawProducts.map((p) => ({ id: p.id, name: p.name, description: p.description, price: p.price, imageUrl: p.imageUrl ?? "" }))
     : FALLBACK_PRODUCTS;
 
-  const [selected, setSelected] = useState<Product | null>(null);
+  const [selected, setSelected]     = useState<Product | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
+  const [lightbox, setLightbox]     = useState<Product | null>(null);
 
   function prefillOrder(p: Product) {
     setSelected(p);
@@ -118,7 +119,8 @@ export default function ShopClient({ products: rawProducts }: { products: Record
                  className="rounded-xl overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-lg"
                  style={{ backgroundColor: "#FDF6EC", boxShadow: "0 2px 12px rgba(60,30,10,0.08)" }}>
               <div className="w-full aspect-video flex items-center justify-center text-5xl overflow-hidden"
-                   style={{ backgroundColor: "#F0E0C8" }}>
+                   style={{ backgroundColor: "#F0E0C8", cursor: p.imageUrl ? "zoom-in" : "default" }}
+                   onClick={() => p.imageUrl && setLightbox(p)}>
                 {p.imageUrl
                   // eslint-disable-next-line @next/next/no-img-element
                   ? <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
@@ -229,6 +231,35 @@ export default function ShopClient({ products: rawProducts }: { products: Record
         <p>Liên hệ: <a href="mailto:tinysunmoon@gmail.com" className="text-[#C67B52] hover:underline">tinysunmoon@gmail.com</a></p>
         <p className="mt-4 opacity-50 text-xs">© 2026 Building Libraries. Toàn bộ doanh thu hỗ trợ giáo dục trẻ em.</p>
       </footer>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+          onClick={() => setLightbox(null)}
+        >
+          <div className="relative max-w-4xl w-full" onClick={e => e.stopPropagation()}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={lightbox.imageUrl}
+              alt={lightbox.name}
+              className="w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
+            />
+            <div className="mt-3 text-center">
+              <p className="font-bold text-lg text-white">{lightbox.name}</p>
+              <p className="font-sans text-sm mt-0.5" style={{ color: "#F0E0C8" }}>{formatVND(lightbox.price)}</p>
+            </div>
+            <button
+              onClick={() => setLightbox(null)}
+              className="absolute -top-4 -right-4 w-9 h-9 rounded-full flex items-center justify-center font-sans font-bold text-lg shadow-lg"
+              style={{ backgroundColor: "#C67B52", color: "white" }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Toast */}
       {toastVisible && (
