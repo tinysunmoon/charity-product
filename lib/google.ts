@@ -33,10 +33,16 @@ export async function getProducts(): Promise<Record<string, string>[]> {
   });
 
   const rows = res.data.values ?? [];
-  if (rows.length < 2) return [];
 
-  const [header, ...data] = rows;
-  return data.map((row) =>
-    Object.fromEntries(header.map((h: string, i: number) => [h, row[i] ?? ""]))
-  );
+  // Only keep rows whose first cell starts with "prod_" (skips header or empty rows)
+  return rows
+    .filter((row) => (row[0] ?? "").startsWith("prod_"))
+    .map((row) => ({
+      id:          row[0] ?? "",
+      name:        row[1] ?? "",
+      description: row[2] ?? "",
+      price:       row[3] ?? "",
+      imageUrl:    row[4] ?? "",
+      createdAt:   row[5] ?? "",
+    }));
 }
