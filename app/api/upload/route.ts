@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { uploadImage } from "@/lib/cloudinary";
-import { appendToSheet } from "@/lib/google";
+import { appendProduct } from "@/lib/google";
 
 export const maxDuration = 60;
 export const dynamic     = "force-dynamic";
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     const id        = `prod_${Date.now()}`;
     const createdAt = new Date().toISOString();
 
-    await appendToSheet([id, name, description, price, imageUrl, createdAt]);
+    await appendProduct([id, name, description, price, imageUrl, createdAt, "available"]);
 
     return NextResponse.json({ success: true, id, imageUrl });
   } catch (err) {
