@@ -6,7 +6,8 @@ export async function GET() {
     const products = await getProducts();
     return NextResponse.json(products);
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Failed to load products" }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[products]", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

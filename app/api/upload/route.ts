@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, id, imageUrl });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Tải lên thất bại" }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[upload]", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
