@@ -1,28 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
-import { uploadToDrive, appendToSheet } from "@/lib/google";
+import { uploadImage } from "@/lib/cloudinary";
+import { appendToSheet } from "@/lib/google";
 
 export const maxDuration = 60;
-export const dynamic = "force-dynamic";
+export const dynamic     = "force-dynamic";
 
-const MAX_WIDTH  = 1200;
-const MAX_HEIGHT = 1200;
-const QUALITY    = 82;
-
-async function resizeImage(buffer: Buffer, originalName: string): Promise<{ buffer: Buffer; name: string; mime: string }> {
+async function resizeImage(buffer: Buffer): Promise<{ buffer: Buffer; mime: string }> {
   const resized = await sharp(buffer)
-    .resize(MAX_WIDTH, MAX_HEIGHT, { fit: "inside", withoutEnlargement: true })
-    .webp({ quality: QUALITY })
+    .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 82 })
     .toBuffer();
-
-  const baseName = originalName.replace(/\.[^.]+$/, "");
-  return { buffer: resized, name: `${baseName}.webp`, mime: "image/webp" };
+  return { buffer: resized, mime: "image/webp" };
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-
+    const formData   = await req.formData();
     const name        = formData.get("name") as string;
     const description = formData.get("description") as string;
     const price       = formData.get("price") as string;
@@ -35,8 +29,8 @@ export async function POST(req: NextRequest) {
     let imageUrl = "";
     if (imageFile && imageFile.size > 0) {
       const raw = Buffer.from(await imageFile.arrayBuffer());
-      const { buffer, name: fileName, mime } = await resizeImage(raw, imageFile.name);
-      imageUrl = await uploadToDrive(buffer, fileName, mime);
+      const { buffer, mime } = await resizeImage(raw);
+      imageUrl = await uploadImage(buffer, mime);
     }
 
     const id        = `prod_${Date.now()}`;
