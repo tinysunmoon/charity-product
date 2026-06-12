@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { Readable } from "stream";
 
 function getAuth() {
   const privateKey = (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? "").replace(/\\n/g, "\n");
@@ -14,6 +15,14 @@ function getAuth() {
   });
 }
 
+function bufferToStream(buf: Buffer): Readable {
+  const readable = new Readable();
+  readable._read = () => {};
+  readable.push(buf);
+  readable.push(null);
+  return readable;
+}
+
 export async function uploadToDrive(
   fileBuffer: Buffer,
   fileName: string,
@@ -22,15 +31,12 @@ export async function uploadToDrive(
   const auth = getAuth();
   const drive = google.drive({ version: "v3", auth });
 
-  const { Readable } = await import("stream");
-  const stream = Readable.from(fileBuffer);
-
   const res = await drive.files.create({
     requestBody: {
       name: fileName,
       parents: [process.env.GOOGLE_DRIVE_FOLDER_ID!],
     },
-    media: { mimeType, body: stream },
+    media: { mimeType, body: bufferToStream(fileBuffer) },
     fields: "id",
   });
 

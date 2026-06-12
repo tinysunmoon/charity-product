@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { uploadToDrive, appendToSheet } from "@/lib/google";
 
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 const MAX_WIDTH  = 1200;
 const MAX_HEIGHT = 1200;
 const QUALITY    = 82;
