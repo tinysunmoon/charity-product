@@ -17,7 +17,7 @@ export async function appendToSheet(row: string[]): Promise<void> {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId:   process.env.GOOGLE_SHEET_ID!,
-    range:           "Products!A:F",
+    range:           "A:F",
     valueInputOption: "USER_ENTERED",
     requestBody:     { values: [row] },
   });
@@ -29,7 +29,7 @@ export async function getProducts(): Promise<Record<string, string>[]> {
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-    range:         "Products!A:F",
+    range:         "A:F",
   });
 
   const rows = res.data.values ?? [];
